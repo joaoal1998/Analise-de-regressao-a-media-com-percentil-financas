@@ -1,79 +1,168 @@
-# 📈 Ibovespa Quantitative Trading Strategy
+# Análise Quantitativa do Ibovespa - Estratégia de Reversão à Média
 
-> Estratégia de trading quantitativo baseada em reversão à média para o índice Ibovespa utilizando análise estatística e detecção de anomalias.
+## 📊 Visão Geral
+Este projeto implementa uma estratégia de trading quantitativo baseada em reversão à média para o índice Ibovespa (^BVSP), utilizando análise estatística avançada e detecção de anomalias.
 
+## 🛠️ Instalação e Configuração
 
-## 🎯 Objetivo
-
-Este projeto desenvolve e testa uma estratégia de trading algorítmico para o Ibovespa (^BVSP) baseada em:
-- **Reversão à média**
-- **Detecção de anomalias** usando percentis móveis
-- **Análise quantitativa** robusta de performance
-
-## 🚀 Características Principais
-
-- ✅ **Análise Exploratória Completa** - EDA detalhada dos dados históricos
-- ✅ **Estratégia Robusta** - Uso de percentis em vez de desvios padrão
-- ✅ **Visualizações Interativas** - Gráficos com Plotly
-- ✅ **Métricas de avaliação** - Sharpe ratio, drawdown, taxa de acerto
-
-## 📊 Metodologia
-
-### 1. Coleta de Dados
-- **Fonte**: Yahoo Finance (yfinance)
-- **Período**: 2016-2025
-- **Ativo**: Ibovespa (^BVSP)
-
-### 2. Cálculo do Delta
+### Dependências Necessárias
 ```python
-Delta = Preço_Fechamento - Média_Móvel_20_períodos
+# Pip install yfinance==0.2.58
 ```
 
-### 3. Detecção de Anomalias
-- **Banda Superior**: Percentil 95-98% dos valores Delta
-- **Banda Inferior**: Percentil 2-5% dos valores Delta
-- **Sinal de Compra**: Quando Delta < Banda Inferior
-
-### 4. Gestão de Risco
-- Filtro para evitar compras em quedas extremas
-- Horizonte de operação configurável
-- Estratégia long-only
-
-## 🛠️ Instalação
-
-### Pré-requisitos
-```bash
-Python 3.8+
+### Importação das Bibliotecas
+```python
+import yfinance as yf
+import pandas as pd
+import numpy as np
+from scipy import stats
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+import warnings
+warnings.filterwarnings('ignore')
 ```
 
-### Dependências
-```bash
-pip install yfinance==0.2.58
-pip install pandas numpy scipy plotly
+## 📈 Coleta e Preparação dos Dados
+
+### Download dos Dados Históricos
+- **Ticker**: ^BVSP (Ibovespa)
+- **Período**: 2016-01-01 a 2025-12-31
+- **Fonte**: Yahoo Finance via yfinance
+
+```python
+ticker = '^BVSP'
+dtini = '2016-01-01'
+dtfin = '2025-12-31'
+df = yf.download(ticker, dtini, dtfin, auto_adjust=False)
 ```
 
-### Visualizações
-O projeto gera gráficos interativos mostrando:
-1. **Delta com Bandas** - Série temporal com níveis de anomalia
-2. **Sinais de Trading** - Pontos de entrada no gráfico de preços  
-3. **Performance Acumulada** - Evolução dos retornos da estratégia
+## 🔍 Análise Exploratória de Dados (EDA)
 
-## 📊 Métricas Analisadas
+### Informações Básicas
+- Dimensões do dataset
+- Tipos de dados
+- Valores ausentes
+- Duplicatas
+- Estatísticas descritivas
 
-### Performance
-- Retorno total e por trade
-- Taxa de acerto (trades positivos/total)
-- Sharpe ratio (retorno/risco)
-- Drawdown máximo
+### Análise Estatística Detalhada
+Para cada coluna do dataset:
+- Média e Mediana
+- Moda
+- Desvio Padrão
+- Assimetria (Skewness)
+- Curtose (Kurtosis)
+- Valores mínimos e máximos
 
-### Estatísticas
+## 📊 Construção da Estratégia
+
+### Cálculo do Delta
+O **Delta** representa a diferença entre o preço de fechamento ajustado e sua média móvel:
+```python
+df['MM'] = df['Adj Close'].rolling(20).mean()
+df['Delta'] = df['Adj Close'] - df['MM']
+```
+
+### Método de Bandas Melhoradas
+Utiliza percentis móveis para detecção robusta de anomalias:
+
+#### Parâmetros:
+- **Janela**: Tamanho da janela móvel (padrão: 20 períodos)
+- **Percentil**: Percentual de dados fora das bandas (padrão: 2%)
+
+#### Cálculo das Bandas:
+- **Banda Superior**: Percentil 98% dos valores Delta
+- **Banda Inferior**: Percentil 2% dos valores Delta
+- **Média Móvel**: Mediana móvel (robusta para outliers)
+
+## 🎯 Lógica da Estratégia
+
+### Detecção de Anomalias
+- **Anomalia Superior**: Delta > Banda Superior
+- **Anomalia Inferior**: Delta < Banda Inferior
+
+### Regras de Trading
+- **Sinal de Compra**: Quando Delta < Banda Inferior E Delta > -5000
+- **Horizonte**: Operações com duração de dias especificados
+- **Tipo**: Long-only (apenas compras)
+
+### Filtros de Segurança
+- Filtro adicional para evitar compras em quedas extremas (Delta > -5000)
+
+## 📊 Análise de Performance
+
+### Métricas Calculadas
+- **Total de Trades**: Número de operações executadas
+- **Taxa de Acerto**: Percentual de trades positivos
+- **Retorno Total**: Performance acumulada da estratégia
+- **Retorno Médio por Trade**: Rentabilidade média das operações
+- **Sharpe Ratio**: Relação risco-retorno ajustada
+- **Drawdown Máximo**: Maior perda a partir do pico
+
+### Análise de Anomalias
+- Frequência de detecção de anomalias
+- Distribuição entre anomalias superiores e inferiores
+- Percentual de dias com anomalias detectadas
+
+## 📈 Visualizações
+
+### Gráfico Triplo Interativo
+1. **Delta com Bandas**: Visualização das bandas e série Delta
+2. **Sinais de Trading**: Pontos de entrada no gráfico de preços
+3. **Performance Acumulada**: Evolução do retorno da estratégia
+
+## 🔧 Parâmetros Configuráveis
+
+### Estratégia Principal
+- `janela`: Tamanho da janela móvel (padrão: 10)
+- `percentil`: Percentil para bandas (padrão: 5)
+- `alvo_dias`: Duração das operações (padrão: 5)
+
+### Personalização
+Todos os parâmetros podem ser ajustados para otimização da estratégia conforme diferentes condições de mercado.
+
+## 📋 Resultados e Interpretação
+
+### Estatísticas da Série Delta
+- Análise de normalidade dos dados
+- Momentos estatísticos (média, variância, assimetria, curtose)
+- Identificação de padrões de reversão
+
+### Performance da Estratégia
+- Retornos absolutos e relativos
+- Análise de risco-retorno
+- Comparação com buy-and-hold
+
+## 🚀 Execução
+
+Para executar a análise completa:
+```python
+df_resultado = executar_analise_completa(df)
+```
+
+Esta função executará:
+1. Análise exploratória completa
+2. Implementação da estratégia
+3. Cálculo de performance
+4. Geração de visualizações interativas
+
+## 📊 Considerações Técnicas
+
+### Robustez Estatística
+- Uso de percentis em vez de desvios padrão para maior robustez
+- Mediana móvel para reduzir impacto de outliers
 - Análise de normalidade da série Delta
-- Momentos estatísticos (assimetria, curtose)
-- Frequência de anomalias detectadas
 
-## ⚠️ Disclaimer
+### Limitações
+- Estratégia long-only (não considera vendas a descoberto)
+- Não considera custos de transação
+- Baseada apenas em dados históricos
+- Assume liquidez suficiente para execução
 
-- **Finalidade Educacional**: Este projeto é para fins de estudo e pesquisa
-- **Não é Consultoria**: Não constitui recomendação de investimento
-- **Riscos**: Trading envolve riscos de perda de capital
-- **Backtesting**: Resultados passados não garantem performance futura
+## 🎯 Próximos Passos
+
+- Implementação de stop-loss e take-profit
+- Análise de diferentes horizontes temporais
+- Inclusão de custos de transação
+- Teste em outros ativos
+- Implementação de estratégias short
