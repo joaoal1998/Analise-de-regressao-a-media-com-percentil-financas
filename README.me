@@ -1,0 +1,169 @@
+# 📈 Ibovespa Quantitative Trading Strategy
+
+> Estratégia de trading quantitativo baseada em reversão à média para o índice Ibovespa utilizando análise estatística avançada e detecção de anomalias.
+
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)]()
+
+## 🎯 Objetivo
+
+Este projeto desenvolve e testa uma estratégia de trading algorítmico para o Ibovespa (^BVSP) baseada em:
+- **Reversão à média** estatística
+- **Detecção de anomalias** usando percentis móveis
+- **Análise quantitativa** robusta de performance
+
+## 🚀 Características Principais
+
+- ✅ **Análise Exploratória Completa** - EDA detalhada dos dados históricos
+- ✅ **Estratégia Robusta** - Uso de percentis em vez de desvios padrão
+- ✅ **Visualizações Interativas** - Gráficos com Plotly
+- ✅ **Métricas Avançadas** - Sharpe ratio, drawdown, taxa de acerto
+- ✅ **Parâmetros Configuráveis** - Fácil otimização da estratégia
+- ✅ **Código Documentado** - Funções bem estruturadas e comentadas
+
+## 📊 Metodologia
+
+### 1. Coleta de Dados
+- **Fonte**: Yahoo Finance (yfinance)
+- **Período**: 2016-2025
+- **Ativo**: Ibovespa (^BVSP)
+
+### 2. Cálculo do Delta
+```python
+Delta = Preço_Fechamento - Média_Móvel_20_períodos
+```
+
+### 3. Detecção de Anomalias
+- **Banda Superior**: Percentil 95-98% dos valores Delta
+- **Banda Inferior**: Percentil 2-5% dos valores Delta
+- **Sinal de Compra**: Quando Delta < Banda Inferior
+
+### 4. Gestão de Risco
+- Filtro para evitar compras em quedas extremas
+- Horizonte de operação configurável
+- Estratégia long-only
+
+## 🛠️ Instalação
+
+### Pré-requisitos
+```bash
+Python 3.8+
+```
+
+### Dependências
+```bash
+pip install yfinance==0.2.58
+pip install pandas numpy scipy plotly
+```
+
+### Uso
+```python
+# Clone o repositório
+git clone https://github.com/seu-usuario/ibovespa-quant-strategy.git
+cd ibovespa-quant-strategy
+
+# Execute o notebook ou script
+python ibovespa_strategy.py
+```
+
+## 📈 Resultados
+
+### Performance Típica
+- **Taxa de Acerto**: ~60-70% (varia conforme parâmetros)
+- **Sharpe Ratio**: Positivo na maioria dos períodos
+- **Drawdown Máximo**: Controlado através dos filtros
+- **Frequência de Sinais**: ~2-5% dos dias úteis
+
+### Visualizações
+O projeto gera gráficos interativos mostrando:
+1. **Delta com Bandas** - Série temporal com níveis de anomalia
+2. **Sinais de Trading** - Pontos de entrada no gráfico de preços  
+3. **Performance Acumulada** - Evolução dos retornos da estratégia
+
+## 🔧 Configuração
+
+### Parâmetros Principais
+```python
+executar_analise_completa(
+    df,
+    janela=10,      # Janela da média móvel
+    percentil=5,    # Percentil para bandas (5% = bandas nos percentis 5% e 95%)
+    alvo_dias=5     # Duração das operações em dias
+)
+```
+
+### Customização
+- Ajuste de parâmetros para diferentes condições de mercado
+- Modificação fácil dos filtros de risco
+- Extensão para outros ativos financeiros
+
+## 📁 Estrutura do Projeto
+
+```
+├── ibovespa_strategy.py      # Script principal
+├── README.md                 # Este arquivo
+├── requirements.txt          # Dependências
+├── data/                     # Dados históricos (gerados automaticamente)
+├── notebooks/               # Jupyter notebooks para análise
+└── results/                 # Gráficos e relatórios gerados
+```
+
+## 📊 Métricas Analisadas
+
+### Performance
+- Retorno total e por trade
+- Taxa de acerto (trades positivos/total)
+- Sharpe ratio (retorno/risco)
+- Drawdown máximo
+
+### Estatísticas
+- Análise de normalidade da série Delta
+- Momentos estatísticos (assimetria, curtose)
+- Frequência de anomalias detectadas
+
+## ⚠️ Disclaimer
+
+- **Finalidade Educacional**: Este projeto é para fins de estudo e pesquisa
+- **Não é Consultoria**: Não constitui recomendação de investimento
+- **Riscos**: Trading envolve riscos de perda de capital
+- **Backtesting**: Resultados passados não garantem performance futura
+
+## 🤝 Contribuições
+
+Contribuições são bem-vindas! Algumas ideias:
+
+- [ ] Implementar stop-loss/take-profit
+- [ ] Adicionar custos de transação
+- [ ] Testar em outros índices/ativos
+- [ ] Criar estratégias long-short
+- [ ] Otimização automática de parâmetros
+- [ ] Interface web interativa
+
+### Como Contribuir
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## 👨‍💻 Autor
+
+**Seu Nome**
+- GitHub: [@seu-usuario](https://github.com/seu-usuario)
+- LinkedIn: [Seu LinkedIn](https://linkedin.com/in/seu-perfil)
+- Email: seu.email@exemplo.com
+
+## 🙏 Agradecimentos
+
+- [yfinance](https://github.com/ranaroussi/yfinance) pela API de dados financeiros
+- [Plotly](https://plotly.com/python/) pelas visualizações interativas
+- Comunidade Python de finanças quantitativas
+
+---
+
+⭐ **Se este projeto foi útil, considere dar uma estrela!** ⭐
