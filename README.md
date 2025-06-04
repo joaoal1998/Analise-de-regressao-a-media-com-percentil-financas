@@ -166,3 +166,5 @@ Esta função executará:
 - Inclusão de custos de transação
 - Teste em outros ativos
 - Implementação de estratégias short
+
+Disclaimer: Esta ferramenta é apenas para fins educacionais e de pesquisa. Não constitui aconselhamento financeiro. Sempre consulte um profissional qualificado antes de tomar decisões de investimento.
